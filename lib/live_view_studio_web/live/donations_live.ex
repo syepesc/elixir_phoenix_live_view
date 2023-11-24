@@ -8,8 +8,8 @@ defmodule LiveViewStudioWeb.DonationsLive do
   end
 
   def handle_params(params, _uri, socket) do
-    sort_by = String.to_atom(params["sort_by"] || "id")
-    sort_order = String.to_atom(params["sort_order"] || "asc")
+    sort_by = valid_sort_by(params)
+    sort_order = valid_sort_order(params)
 
     options = %{
       sort_by: sort_by,
@@ -58,4 +58,18 @@ defmodule LiveViewStudioWeb.DonationsLive do
   end
 
   defp sort_indicator(_, _), do: ""
+
+  defp valid_sort_by(%{"sort_by" => sort_by})
+       when sort_by in ~w(item quantity days_until_expires) do
+    String.to_existing_atom(sort_by)
+  end
+
+  defp valid_sort_by(_params), do: :id
+
+  defp valid_sort_order(%{"sort_order" => sort_order})
+       when sort_order in ~w(asc desc) do
+    String.to_existing_atom(sort_order)
+  end
+
+  defp valid_sort_order(_params), do: :asc
 end
