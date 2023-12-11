@@ -15,20 +15,26 @@ defmodule LiveViewStudioWeb.VolunteersLive do
       |> assign(volunteers: volunteers)
       |> assign(form: to_form(changeset))
 
-    {:ok, socket}
+    {:ok, socket, temporary_assigns: [volunteers: []]}
   end
 
   def render(assigns) do
     ~H"""
     <h1>Volunteer Check-In</h1>
     <div id="volunteer-checkin">
-      <.form for={@form} phx-submit="save">
-        <.input field={@form[:name]} placeholder="Name" autocomplete="off" />
+      <.form for={@form} phx-submit="save" phx-change="validate">
+        <.input
+          field={@form[:name]}
+          placeholder="Name"
+          autocomplete="off"
+          phx-debounce="2000"
+        />
         <.input
           field={@form[:phone]}
           type="tel"
           placeholder="Phone"
           autocomplete="off"
+          phx-debounce="blur"
         />
         <.button phx-disable-with="Saving...">
           Check In
@@ -76,5 +82,15 @@ defmodule LiveViewStudioWeb.VolunteersLive do
       {:error, changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
+  end
+
+  def handle_event("validate", %{"volunteer" => volunteer_params}, socket) do
+    #  we need to change the actions so the browser capture the action
+    changeset =
+      %Volunteer{}
+      |> Volunteers.change_volunteer(volunteer_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, form: to_form(changeset))}
   end
 end
