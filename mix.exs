@@ -54,7 +54,8 @@ defmodule LiveViewStudio.MixProject do
       {:bcrypt_elixir, "~> 3.0"},
       {:faker, "~> 0.17.0"},
       {:number, "~> 1.0"},
-      {:timex, "~> 3.7"}
+      {:timex, "~> 3.7"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
