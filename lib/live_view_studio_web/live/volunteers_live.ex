@@ -5,6 +5,10 @@ defmodule LiveViewStudioWeb.VolunteersLive do
   alias LiveViewStudio.Volunteers.Volunteer
 
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      Volunteers.subscribe()
+    end
+
     volunteers = Volunteers.list_volunteers()
 
     # create empty changeset to pass to initial form values
@@ -21,15 +25,15 @@ defmodule LiveViewStudioWeb.VolunteersLive do
 
   def handle_event("save", %{"volunteer" => volunteer_params}, socket) do
     case Volunteers.create_volunteer(volunteer_params) do
-      {:ok, volunteer} ->
-        # empty form to restart the UI
+      {:ok, _volunteer} ->
+        # the create_volunteer function will send a broadcast message to all the liveViews
+        # the UI post-action is handle here (locally to this process): clean form and send a flash message
+        # the Backend-UI post-action is handle in handle_info callback: add new volunteer and update count in all liveViews
         changeset = Volunteers.change_volunteer(%Volunteer{})
 
         socket =
           socket
-          |> stream_insert(:volunteers, volunteer, at: 0)
           |> assign(:form, to_form(changeset))
-          |> update(:count, fn x -> x + 1 end)
           |> put_flash(:info, "Volunteer successfully checked in!")
 
         {:noreply, socket}
@@ -54,13 +58,10 @@ defmodule LiveViewStudioWeb.VolunteersLive do
   def handle_event("toggle-status", %{"id" => id}, socket) do
     volunteer = Volunteers.get_volunteer!(id)
 
-    {:ok, volunteer} =
-      Volunteers.update_volunteer(
-        volunteer,
-        %{checked_out: !volunteer.checked_out}
-      )
+    {:ok, _volunteer} =
+      Volunteers.update_volunteer(volunteer, %{checked_out: !volunteer.checked_out})
 
-    {:noreply, stream_insert(socket, :volunteers, volunteer)}
+    {:noreply, socket}
   end
 
   def handle_event("delete", %{"id" => id}, socket) do
@@ -68,6 +69,19 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     {:ok, _} = Volunteers.delete_volunteer(volunteer)
 
     {:noreply, stream_delete(socket, :volunteers, volunteer)}
+  end
+
+  def handle_info({:volunteer_created, volunteer}, socket) do
+    socket =
+      socket
+      |> stream_insert(:volunteers, volunteer, at: 0)
+      |> update(:count, fn x -> x + 1 end)
+
+    {:noreply, socket}
+  end
+
+  def handle_info({:volunteer_updated, volunteer}, socket) do
+    {:noreply, stream_insert(socket, :volunteers, volunteer)}
   end
 
   def render(assigns) do
