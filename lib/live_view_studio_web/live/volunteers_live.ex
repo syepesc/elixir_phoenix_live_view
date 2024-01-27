@@ -68,7 +68,7 @@ defmodule LiveViewStudioWeb.VolunteersLive do
     volunteer = Volunteers.get_volunteer!(id)
     {:ok, _} = Volunteers.delete_volunteer(volunteer)
 
-    {:noreply, stream_delete(socket, :volunteers, volunteer)}
+    {:noreply, put_flash(socket, :info, "Volunteer successfully deleted!")}
   end
 
   def handle_info({:volunteer_created, volunteer}, socket) do
@@ -82,6 +82,15 @@ defmodule LiveViewStudioWeb.VolunteersLive do
 
   def handle_info({:volunteer_updated, volunteer}, socket) do
     {:noreply, stream_insert(socket, :volunteers, volunteer)}
+  end
+
+  def handle_info({:volunteer_deleted, volunteer}, socket) do
+    socket =
+      socket
+      |> update(:count, fn x -> x - 1 end)
+      |> stream_delete(:volunteers, volunteer)
+
+    {:noreply, socket}
   end
 
   def render(assigns) do

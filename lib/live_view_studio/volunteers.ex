@@ -2,20 +2,22 @@ defmodule LiveViewStudio.Volunteers do
   @moduledoc """
   The Volunteers context.
   """
-
   import Ecto.Query, warn: false
   alias LiveViewStudio.Repo
 
   alias LiveViewStudio.Volunteers.Volunteer
 
+  # this will return the module name as a string -> LiveViewStudio.Volunteers
+  @topic inspect(__MODULE__)
+  @pubsub LiveViewStudio.PubSub
   def subscribe() do
-    Phoenix.PubSub.subscribe(LiveViewStudio.PubSub, "volunteers")
+    Phoenix.PubSub.subscribe(@pubsub, @topic)
   end
 
   @spec broadcast({:error, %Volunteer{}} | {:ok, %Volunteer{}}, atom()) ::
           {:error, any()} | {:ok, %Volunteer{}}
   def broadcast({:ok, volunteer}, tag) do
-    Phoenix.PubSub.broadcast(LiveViewStudio.PubSub, "volunteers", {tag, volunteer})
+    Phoenix.PubSub.broadcast(@pubsub, @topic, {tag, volunteer})
     {:ok, volunteer}
   end
 
@@ -102,6 +104,7 @@ defmodule LiveViewStudio.Volunteers do
   """
   def delete_volunteer(%Volunteer{} = volunteer) do
     Repo.delete(volunteer)
+    |> broadcast(:volunteer_deleted)
   end
 
   @doc """
