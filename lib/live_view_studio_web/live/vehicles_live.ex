@@ -52,7 +52,6 @@ defmodule LiveViewStudioWeb.VehiclesLive do
     """
   end
 
-  @impl Phoenix.LiveView
   def handle_event("search", %{"make_or_model" => make_or_model}, socket) do
     send(self(), {:run_search, make_or_model})
 

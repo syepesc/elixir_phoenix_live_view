@@ -71,7 +71,6 @@ defmodule LiveViewStudioWeb.FlightsLive do
     """
   end
 
-  @impl Phoenix.LiveView
   def handle_event("search", %{"airport" => airport}, socket) do
     send(self(), {:run_search, airport})
 
@@ -85,7 +84,6 @@ defmodule LiveViewStudioWeb.FlightsLive do
     {:noreply, socket}
   end
 
-  @impl Phoenix.LiveView
   def handle_event("suggest", %{"airport" => prefix}, socket) do
     matches = Airports.suggest(prefix)
     {:noreply, assign(socket, matches: matches)}
