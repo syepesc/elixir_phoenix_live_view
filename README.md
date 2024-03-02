@@ -1,18 +1,46 @@
-# LiveViewStudio
+# Elixir Phoenix LiveView
 
-To start your Phoenix server:
+The intent of this repo is to practice my Elixir knowledge by making use of Phoenix framework and Phoenix-LiveView.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+Concepts applied:
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+- [Phoenix](https://hexdocs.pm/phoenix/overview.html) web development framework.
+- Server side rendering using [Phoenix LiveView](https://hexdocs.pm/phoenix_live_view/welcome.html).
+- [Ecto](https://hexdocs.pm/ecto/Ecto.html) schemas and changesets using Postgres.
+- HTML, CSS, and JavaScript.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## How to run the project?
 
-## Learn more
+- Install [mise](https://mise.jdx.dev/getting-started.html) (previously `rtx`) , `cd` into the project directory and run:
 
-  * Official website: <https://www.phoenixframework.org/>
-  * Guides: <https://hexdocs.pm/phoenix/overview.html>
-  * Docs: <https://hexdocs.pm/phoenix>
-  * Forum: <https://elixirforum.com/c/phoenix-forum>
-  * Source: <https://github.com/phoenixframework/phoenix>
+```bash
+mise install
+```
+
+- `cd` into the project directory and run the following to install and setup dependencies:
+
+```bash
+mix setup
+```
+
+- Start Phoenix endpoint with
+
+```bash
+mix phx.server
+```
+
+OR inside IEx with
+
+```bash
+iex -S mix phx.server
+```
+
+> Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+## How to run the test suite of the project?
+
+- `cd` into the project directory and run:
+
+```bash
+mix test
+```
