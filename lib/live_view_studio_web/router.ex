@@ -18,6 +18,16 @@ defmodule LiveViewStudioWeb.Router do
   end
 
   scope "/", LiveViewStudioWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    live_session :authenticated,
+      on_mount: [{LiveViewStudioWeb.UserAuth, :ensure_authenticated}] do
+      live "/topsecret", TopSecretLive
+      live "/presence", PresenceLive
+    end
+  end
+
+  scope "/", LiveViewStudioWeb do
     pipe_through :browser
 
     get "/", PageController, :home
@@ -32,8 +42,6 @@ defmodule LiveViewStudioWeb.Router do
     live "/servers/:id", ServersLive
     live "/donations", DonationsLive
     live "/volunteers", VolunteersLive
-    live "/topsecret", TopSecretLive
-    live "/presence", PresenceLive
     live "/bookings", BookingsLive
     live "/shop", ShopLive
     live "/juggling", JugglingLive
